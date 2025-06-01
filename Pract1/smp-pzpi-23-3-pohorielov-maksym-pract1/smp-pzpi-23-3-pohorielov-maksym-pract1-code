@@ -1,1 +1,80 @@
+#!/bin/bash
 
+draw_tier() {
+    local max_width=$((snow_width - 2))
+    local start_width=1
+    local i=0
+    local char
+
+    while (( start_width <= max_width )); do
+        if (( i % 2 == 0 )); then
+            char="*"
+        else
+            char="#"
+        fi
+
+        local padding=$(( (snow_width - start_width) / 2 ))
+        printf "%*s" $padding ""
+        for ((j = 0; j < start_width; j++)); do
+            printf "%s" "$char"
+        done
+        echo
+
+        ((start_width += 2))
+        ((i++))
+    done
+}
+
+if [ $# -ne 2 ]; then
+    echo "Помилка: необхідно вказати два параметри — висоту та ширину снігу" >&2
+    exit 1
+fi
+
+total_height=$1
+snow_width=$2
+
+if ! [[ "$total_height" =~ ^[0-9]+$ && "$snow_width" =~ ^[0-9]+$ && $total_height -gt 0 && $snow_width -gt 0 ]]; then
+    echo "Помилка: параметри повинні бути додатніми цілими числами" >&2
+    exit 1
+fi
+
+trunk_height=2
+
+snow_height=1
+
+tier_height=4
+
+usable_height=$((total_height - trunk_height - snow_height))
+
+num_tiers=0
+remaining_lines=$((total_height - trunk_height - snow_height))
+while (( remaining_lines >= tier_height )); do
+    ((num_tiers++))
+    ((remaining_lines -= tier_height))
+done
+
+max_tier_width=$((snow_width - 2))
+
+if [ $max_tier_width -lt 1 ] || [ $num_tiers -lt 1 ]; then
+    echo "Помилка: неможливо побудувати ялинку з вказаними параметрами" >&2
+    exit 1
+fi
+
+for ((t = 0; t < num_tiers; t++)); do
+    draw_tier $tier_height $max_tier_width
+done
+
+for ((i = 0; i < trunk_height; i++)); do
+    padding=$(( (snow_width - 3) / 2 ))
+    printf "%*s" $padding ""
+    echo "###"
+done
+
+for ((i = 0; i < snow_height; i++)); do
+    for ((j = 0; j < snow_width; j++)); do
+        printf "*"
+    done
+    echo
+done
+
+exit 0
