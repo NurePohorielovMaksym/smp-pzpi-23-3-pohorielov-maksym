@@ -95,14 +95,14 @@ function displayBill($cart, $products) {
         echo "РАЗОМ ДО CПЛАТИ: 0\n";
         return;
     }
-    echo "№  НАЗВА                 ЦІНА  КІЛЬКІСТЬ  ВАРТІСТЬ\n";
+    echo "№  НАЗВА                  ЦІНА  КІЛЬКІСТЬ  ВАРТІСТЬ\n";
     ksort($cart);
     $index = 1;
     $total = 0;
     foreach ($cart as $product_number => $quantity) {
         $product = $products[$product_number];
         $cost = $product['price'] * $quantity;
-        printf("%-2d %-20s %6d %8d %8d\n", $index, $product['name'], $product['price'], $quantity, $cost);
+        printf("%-2d %-20s %4d %5d %11d\n", $index, $product['name'], $product['price'], $quantity, $cost);
         $index++;
         $total += $cost;
     }
