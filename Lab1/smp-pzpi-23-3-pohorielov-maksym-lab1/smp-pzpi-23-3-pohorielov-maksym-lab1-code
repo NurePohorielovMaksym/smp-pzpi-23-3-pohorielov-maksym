@@ -145,17 +145,18 @@ NR > 1 {
   topic_lc = tolower(topic)
   if (topic_lc ~ /лаб|лб/) {
     class_type = "lab"
-    duration = 2
+    duration_min = 180  
   } else if (topic_lc ~ /пз|прпа/) {
     class_type = "prac"
-    duration = 1
+    duration_min = 90   
   } else if (topic_lc ~ /лек|лекц/) {
     class_type = "lec"
-    duration = 1
+    duration_min = 90 
   } else {
     class_type = "lec"
-    duration = 1
+    duration_min = 90
   }
+
 
   gsub(/;? *№[0-9]+/, "", topic)
 
@@ -169,10 +170,14 @@ NR > 1 {
   sh12 = (sh % 12 == 0) ? 12 : sh % 12
   stime = sprintf("%02d:%02d %s", sh12, sm, ampm)
 
-  eh = sh + duration
+  start_minutes = sh * 60 + sm
+  end_minutes = start_minutes + duration_min
+  eh = int(end_minutes / 60)
+  em = end_minutes % 60
+
   eampm = (eh >= 12) ? "PM" : "AM"
   eh12 = (eh % 12 == 0) ? 12 : eh % 12
-  etime = sprintf("%02d:%02d %s", eh12, sm, eampm)
+  etime = sprintf("%02d:%02d %s", eh12, em, eampm)
 
   sort_key = sprintf("%04d%02d%02d_%02d%02d_%d", y, m, day, sh, sm, NR)
   result[sort_key] = base_key "|" "\"" topic "\",\"" date_out "\",\"" stime "\",\"" date_out "\",\"" etime "\",\"" subj "\""
